@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="mule-exceptions">
+    <global-element name="Bean" type="http://www.springframework.org/schema/beans/bean" entity-id="Bean#1">
+        <properties>
+            <property name="factory-bean"/>
+            <property name="abstract"/>
+            <property name="scope"/>
+            <property name="init-method"/>
+            <property name="autowire-candidate"/>
+            <property name="factory-method"/>
+            <property name="class" value="main.com.UncheckedExceptionNotificationListener"/>
+            <property name="parent"/>
+            <property name="children"/>
+            <property name="lazy-init"/>
+            <property name="auxiliary;wrappedIn" value="beans@spring@http://www.springframework.org/schema/beans"/>
+            <property name="id" value="uncheckedExceptionListener"/>
+            <property name="primary"/>
+            <property name="name" value="uncheckedExceptionListener"/>
+            <property name="autowire"/>
+            <property name="destroy-method"/>
+            <property name="auxiliary;index" value="2"/>
+            <property name="auxiliary;wrapIn" value="1"/>
+            <property name="depends-on"/>
+        </properties>
+    </global-element>
+    <global-unknown description="false" index="3" entity-id="global-unknown#1">
+        <content>&lt;notifications xmlns=&quot;http://www.mulesoft.org/schema/mule/core&quot;&gt;  
+        &lt;notification event=&quot;EXCEPTION&quot;/&gt;  
+        &lt;notification-listener ref=&quot;uncheckedExceptionListener&quot;/&gt; 
+    &lt;/notifications&gt;</content>
+    </global-unknown>
+    <global-element name="Catch Exception Strategy" type="http://www.mulesoft.org/schema/mule/core/catch-exception-strategy" entity-id="Catch Exception Strategy#1">
+        <properties>
+            <property name=""/>
+            <property name="when"/>
+            <property name="name" value="defaultCatchExceptionStrategy"/>
+            <property name="enableNotifications"/>
+            <property name="auxiliary;index" value="6"/>
+        </properties>
+        <compartment>
+            <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#1">
+                <pattern name="Logger" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="Logger#1">
+                    <graphicalData x="0" y="0" width="0" height="0"/>
+                    <properties>
+                        <property name="message" value="wow #[payload]"/>
+                        <property name="category"/>
+                        <property name="level" value="INFO"/>
+                        <property name="auxiliary;index" value="7"/>
+                    </properties>
+                </pattern>
+                <endpoint direction="Outbound" message-exchange-pattern="OneWay" name="JMS" type="http://www.mulesoft.org/schema/mule/jms/endpoint" entity-id="JMS#1">
+                    <graphicalData x="0" y="0" width="0" height="0"/>
+                    <properties>
+                        <property name="topic"/>
+                        <property name="queue" value="default.error"/>
+                        <property name="durableName"/>
+                        <property name="businessEventsLabel"/>
+                        <property name="disableTransportTransformer"/>
+                        <property name="disableTemporaryReplyToDestinations"/>
+                        <property name="exchange-pattern"/>
+                        <property name="tracking:enable-default-events"/>
+                        <property name="ref"/>
+                        <property name="transformer-refs"/>
+                        <property name="address"/>
+                        <property name="encoding"/>
+                        <property name="responseTransformer-refs"/>
+                        <property name="auxiliary;index" value="8"/>
+                        <property name="mimeType"/>
+                        <property name="responseTimeout"/>
+                        <property name="connector-ref" value="jmsConnector"/>
+                    </properties>
+                </endpoint>
+            </lane>
+        </compartment>
+    </global-element>
+    <global-element name="Configuration" type="http://www.mulesoft.org/schema/mule/core/configuration" entity-id="Configuration#1">
+        <properties>
+            <property name="defaultExceptionStrategy-ref" value="defaultCatchExceptionStrategy"/>
+            <property name="auxiliary;index" value="9"/>
+        </properties>
+    </global-element>
+    <flow SubFlow="false" name="default-exception-flow" entity-id="e0e6bc4d-a98b-4636-a64b-9bc384eec42e">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="auxiliary;index" value="10"/>
+        </properties>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#2">
+            <graphicalData x="0" y="0" width="0" height="0"/>
+            <endpoint direction="Inbound" message-exchange-pattern="OneWay" name="JMS" type="http://www.mulesoft.org/schema/mule/jms/endpoint" entity-id="JMS#2">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="topic"/>
+                    <property name="queue" value="default.in"/>
+                    <property name="durableName"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="disableTemporaryReplyToDestinations"/>
+                    <property name="exchange-pattern"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="address"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="auxiliary;index" value="11"/>
+                    <property name="mimeType"/>
+                    <property name="responseTimeout"/>
+                    <property name="connector-ref" value="jmsConnector"/>
+                </properties>
+            </endpoint>
+            <unknown description="false" index="12" entity-id="unknown#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <content>&lt;test:component xmlns:test=&quot;http://www.mulesoft.org/schema/mule/test&quot; throwException=&quot;true&quot; exceptionToThrow=&quot;java.lang.RuntimeException&quot;/&gt;</content>
+            </unknown>
+            <endpoint direction="Outbound" message-exchange-pattern="OneWay" name="JMS" type="http://www.mulesoft.org/schema/mule/jms/endpoint" entity-id="JMS#3">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="topic"/>
+                    <property name="queue" value="default.out"/>
+                    <property name="durableName"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="disableTemporaryReplyToDestinations"/>
+                    <property name="exchange-pattern"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="address"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="auxiliary;index" value="13"/>
+                    <property name="mimeType"/>
+                    <property name="responseTimeout"/>
+                    <property name="connector-ref" value="jmsConnector"/>
+                </properties>
+            </endpoint>
+        </lane>
+    </flow>
+    <flow SubFlow="false" name="global-catch-exception-flow" entity-id="f85a7803-555b-4177-8acf-43034f16fb5c">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="auxiliary;index" value="14"/>
+        </properties>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#3">
+            <graphicalData x="0" y="0" width="0" height="0"/>
+            <endpoint direction="Inbound" message-exchange-pattern="OneWay" name="JMS" type="http://www.mulesoft.org/schema/mule/jms/endpoint" entity-id="JMS#4">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="topic"/>
+                    <property name="queue" value="catch.in"/>
+                    <property name="durableName"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="disableTemporaryReplyToDestinations"/>
+                    <property name="exchange-pattern"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="address"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="auxiliary;index" value="15"/>
+                    <property name="mimeType"/>
+                    <property name="responseTimeout"/>
+                    <property name="connector-ref" value="jmsConnector"/>
+                </properties>
+            </endpoint>
+            <unknown description="false" index="16" entity-id="unknown#2">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <content>&lt;test:component xmlns:test=&quot;http://www.mulesoft.org/schema/mule/test&quot; appendString=&quot; AND SOME&quot;/&gt;</content>
+            </unknown>
+            <unknown description="false" index="17" entity-id="unknown#3">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <content>&lt;test:component xmlns:test=&quot;http://www.mulesoft.org/schema/mule/test&quot; throwException=&quot;true&quot; exceptionToThrow=&quot;java.lang.RuntimeException&quot;/&gt;</content>
+            </unknown>
+            <endpoint direction="Outbound" message-exchange-pattern="OneWay" name="JMS" type="http://www.mulesoft.org/schema/mule/jms/endpoint" entity-id="JMS#5">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="topic"/>
+                    <property name="queue" value="catch.out"/>
+                    <property name="durableName"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="disableTemporaryReplyToDestinations"/>
+                    <property name="exchange-pattern"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="address"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="auxiliary;index" value="18"/>
+                    <property name="mimeType"/>
+                    <property name="responseTimeout"/>
+                    <property name="connector-ref" value="jmsConnector"/>
+                </properties>
+            </endpoint>
+        </lane>
+    </flow>
+    <flow SubFlow="false" name="choice-exception-flow" entity-id="02ae2fb5-ba25-427f-ae38-989ade0c958b">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="auxiliary;index" value="19"/>
+        </properties>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#4">
+            <graphicalData x="0" y="0" width="0" height="0"/>
+            <endpoint direction="Inbound" message-exchange-pattern="OneWay" name="JMS" type="http://www.mulesoft.org/schema/mule/jms/endpoint" entity-id="JMS#6">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="topic"/>
+                    <property name="queue" value="choice.in"/>
+                    <property name="durableName"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="disableTemporaryReplyToDestinations"/>
+                    <property name="exchange-pattern"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="address"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="auxiliary;index" value="20"/>
+                    <property name="mimeType"/>
+                    <property name="responseTimeout"/>
+                    <property name="connector-ref" value="jmsConnector"/>
+                </properties>
+            </endpoint>
+            <unknown description="false" index="21" entity-id="unknown#4">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <content>&lt;test:component xmlns:test=&quot;http://www.mulesoft.org/schema/mule/test&quot; throwException=&quot;true&quot; exceptionToThrow=&quot;java.io.IOException&quot;/&gt;</content>
+            </unknown>
+            <endpoint direction="Outbound" message-exchange-pattern="OneWay" name="JMS" type="http://www.mulesoft.org/schema/mule/jms/endpoint" entity-id="JMS#7">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="topic"/>
+                    <property name="queue" value="choice.out"/>
+                    <property name="durableName"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="disableTemporaryReplyToDestinations"/>
+                    <property name="exchange-pattern"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="address"/>
+                    <property name="encoding"/>
+                    <property name="responseTransformer-refs"/>
+                    <property name="auxiliary;index" value="22"/>
+                    <property name="mimeType"/>
+                    <property name="responseTimeout"/>
+                    <property name="connector-ref" value="jmsConnector"/>
+                </properties>
+            </endpoint>
+            <scope name="Choice Exception Strategy" type="http://www.mulesoft.org/schema/mule/core/choice-exception-strategy" entity-id="Choice Exception Strategy#1">
+                <properties>
+                    <property name="auxiliary;index" value="23"/>
+                </properties>
+                <compartment entity-id="compartment#1">
+                    <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#5">
+                        <scope name="Catch Exception Strategy" type="http://www.mulesoft.org/schema/mule/core/catch-exception-strategy" entity-id="Catch Exception Strategy#2">
+                            <graphicalData x="0" y="0" width="0" height="0"/>
+                            <properties>
+<property name="labelConfigureConditionalExecutionUsingExpression"/>
+<property name="when" value="#[exception.causedBy(java.io.IOException) and payload contains 'originals']"/>
+<property name="enableNotifications"/>
+<property name="auxiliary;index" value="24"/>
+                            </properties>
+                            <compartment entity-id="compartment#2">
+<lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#6">
+    <pattern name="Logger" type="http://www.mulesoft.org/schema/mule/core/logger" entity-id="Logger#2">
+        <graphicalData x="0" y="0" width="0" height="0"/>
+        <properties>
+            <property name="message" value="A IOException ejected and payload #[payload]"/>
+            <property name="category"/>
+            <property name="level" value="INFO"/>
+            <property name="auxiliary;index" value="25"/>
+        </properties>
+    </pattern>
+</lane>
+                            </compartment>
+                        </scope>
+                        <pattern name="Reference Exception Strategy" type="http://www.mulesoft.org/schema/mule/core/exception-strategy" entity-id="Reference Exception Strategy#1">
+                            <graphicalData x="0" y="0" width="0" height="0"/>
+                            <properties>
+<property name="ref" value="defaultCatchExceptionStrategy"/>
+<property name="auxiliary;index" value="26"/>
+                            </properties>
+                        </pattern>
+                    </lane>
+                </compartment>
+            </scope>
+        </lane>
+    </flow>
+    <description>main flow of the application.</description>
+</mule-configuration>

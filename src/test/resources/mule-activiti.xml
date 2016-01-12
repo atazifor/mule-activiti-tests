@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:test="http://www.mulesoft.org/schema/mule/test" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" version="EE-3.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd 
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <spring:beans>
+        <spring:bean id="jsonObjectMapper" name="jsonObjectMapper" class="main.com.JacksonMapper"/>
+    </spring:beans>
+    <catch-exception-strategy name="defaultCatchExceptionStrategy">
+        <logger message="wow #[payload]" level="INFO" doc:name="Logger"/>
+        <jms:outbound-endpoint queue="default.error" connector-ref="jmsConnector" doc:name="JMS"/>
+    </catch-exception-strategy>
+    <configuration defaultExceptionStrategy-ref="defaultCatchExceptionStrategy" doc:name="Configuration"/>
+    
+    <flow name="MuleActivitiConnectFlowGet" doc:name="MuleActivitiConnectFlowGet">
+        <vm:inbound-endpoint path="mule.activiti.get.in"  doc:name="JMS" exchange-pattern="one-way"/>
+        <set-payload value="test" doc:name="Set Payload"/>
+        <http:outbound-endpoint exchange-pattern="request-response" host="localhost" port="8080" path="activiti-rest/service/repository/process-definitions" method="GET" user="kermit" password="kermit" contentType="application/json" doc:name="HTTP"/>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
+        <set-payload value="#[payload.data]" doc:name="Set Payload"/>
+        <!-- convert flat JSON - String object- (unquoted key in "JSON") to real JSON that has quoted fields so that jackson can correctly parse fields -->
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <json:json-to-object-transformer returnClass="main.com.ActivitiProcessDefinitionsResponse[]" doc:name="JSON to Object"/>
+        <!-- <foreach collection="#[payload]" doc:name="For Each">
+            <json:object-to-json-transformer doc:name="Object to JSON"/>
+            <json:json-to-object-transformer returnClass="main.com.JsonProvider" doc:name="JSON to Object"/>
+            <logger message="The payload is #[payload]" level="INFO" doc:name="Logger"/>
+        </foreach> -->
+        <logger message="Payload starting to print out #[payload]" level="INFO" doc:name="Logger"/>
+        <jms:outbound-endpoint queue="mule.activiti.get.out" connector-ref="jmsConnector" doc:name="JMS"/>
+    </flow>
+    <flow name="MuleActivitiConnectFlowPost" doc:name="MuleActivitiConnectFlowPost">
+        <vm:inbound-endpoint path="mule.activiti.put.in" exchange-pattern="one-way"  doc:name="VM"/>
+        <set-payload value="{&quot;processDefinitionKey&quot;:&quot;escalationExample&quot;}" doc:name="Set Payload"/>
+        <http:outbound-endpoint exchange-pattern="request-response" host="localhost" port="8080" path="activiti-rest/service/runtime/process-instances" method="POST" user="kermit" password="kermit" doc:name="HTTP" contentType="application/json"/>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <json:json-to-object-transformer returnClass="main.com.ActivitiStartProcessInstanceResponse" doc:name="JSON to Object"/>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+        <jms:outbound-endpoint queue="mule.activiti.put.out" connector-ref="jmsConnector" doc:name="JMS"/>
+    </flow>
+</mule>
